@@ -2,7 +2,7 @@
 
 ## ARCHITECTURE
 
-[FACT] Minimal local Python package with validated source-audio loading, a replaceable pretrained AST classifier adapter, deterministic simulated headset stereo input, and signal-only GCC-PHAT localization.
+[FACT] Minimal local Python package with validated source-audio loading, a replaceable pretrained AST classifier adapter, deterministic simulated headset stereo input, signal-only GCC-PHAT localization, and a structured core pipeline.
 
 Planned current core flow:
 
@@ -24,7 +24,7 @@ audio
 
 ## CURRENT MILESTONE
 
-[MILESTONE] TactEar Core Audio Baseline
+[MILESTONE] TactEar Core Audio Baseline — complete
 
 ## VERIFIED FEATURES
 
@@ -37,6 +37,9 @@ audio
 [FACT] Simulated stereo generation verified: the 0 degrees front, negative-left, positive-right convention uses signed left-arrival-time minus right-arrival-time TDOA; delayed channels are zero-padded without wraparound.
 [FACT] GCC-PHAT localization uses only left/right signals, sample rate, and microphone geometry; its peak search is physically constrained to 0.18 / 343.0 seconds and preserves the simulator's signed-delay convention.
 [FACT] Deterministic 16 kHz validation estimated -56.48, -28.45, 0.00, 28.45, and 56.48 degrees for injected -60, -30, 0, 30, and 60 degrees respectively, with LEFT/FRONT/RIGHT labels correct.
+[FACT] `run_pipeline` connects mono loading, unmodified classifier output, simulated stereo, signal-only localization, and a `ThreatEvent`; tests verify classifier reuse and post-estimation localization error calculation.
+[FACT] `scripts/run_demo.py` accepts an audio path and simulated angle, calls the public pipeline, and renders returned event values without duplicating pipeline logic.
+[FACT] README and HANDOFF document the public `run_pipeline(...) -> ThreatEvent` boundary for the second developer.
 [UNKNOWN] Real pretrained inference awaits a review WAV in `demo_audio/`.
 
 ## KNOWN LIMITATIONS
@@ -57,12 +60,13 @@ None currently verified.
 
 ## LAST KNOWN-GOOD BASELINE
 
-[FACT] Python 3.14.2 local virtual environment; audio, classifier, simulator, and localization tests plus package imports pass.
+[FACT] Python 3.14.2 local virtual environment; `python -m pytest` passed all 33 audio, classifier, simulator, localization, and pipeline tests on 2026-09-22. Package import and CLI help checks also passed.
+[FACT] Fresh 16 kHz five-angle localization validation: injected -60/-30/0/+30/+60 degrees estimated -56.48/-28.45/0.00/+28.45/+56.48 degrees, with LEFT/LEFT/FRONT/RIGHT/RIGHT labels.
 
 ## ACTIVE TASK
 
-Next: ThreatEvent + end-to-end core pipeline
+Next milestone: Advisory/UI integration by second developer
 
 ## RECENT VERIFIED CHANGES
 
-[FACT] Added NumPy GCC-PHAT delay estimation, geometry-to-angle conversion, and controlled signal-only localization tests.
+[FACT] Completed review handoff materials: thin CLI demo runner, current README, and `HANDOFF.md` integration guidance.
