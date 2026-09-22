@@ -2,7 +2,7 @@
 
 ## ARCHITECTURE
 
-[FACT] Minimal local Python package with validated source-audio loading, a classification-result contract, and a replaceable pretrained AST classifier adapter.
+[FACT] Minimal local Python package with validated source-audio loading, a replaceable pretrained AST classifier adapter, deterministic simulated headset stereo input, and signal-only GCC-PHAT localization.
 
 Planned current core flow:
 
@@ -34,6 +34,9 @@ audio
 [FACT] `AudioClassifier` lazily integrates `MIT/ast-finetuned-audioset-10-10-0.448-v2` behind a TactEar-owned interface and resamples only its temporary inference waveform to the feature extractor's declared sample rate.
 [FACT] Tactical mapping and top-prediction selection preserve model labels and unmodified model scores; unit tests cover mapping, selection, and per-instance model reuse.
 [FACT] Eleven focused audio/classifier tests passed with NumPy 2.5.3, SoundFile 0.14.0, PyTorch 2.14.0+cpu, Transformers 5.17.0, and SciPy 1.18.1.
+[FACT] Simulated stereo generation verified: the 0 degrees front, negative-left, positive-right convention uses signed left-arrival-time minus right-arrival-time TDOA; delayed channels are zero-padded without wraparound.
+[FACT] GCC-PHAT localization uses only left/right signals, sample rate, and microphone geometry; its peak search is physically constrained to 0.18 / 343.0 seconds and preserves the simulator's signed-delay convention.
+[FACT] Deterministic 16 kHz validation estimated -56.48, -28.45, 0.00, 28.45, and 56.48 degrees for injected -60, -30, 0, 30, and 60 degrees respectively, with LEFT/FRONT/RIGHT labels correct.
 [UNKNOWN] Real pretrained inference awaits a review WAV in `demo_audio/`.
 
 ## KNOWN LIMITATIONS
@@ -54,12 +57,12 @@ None currently verified.
 
 ## LAST KNOWN-GOOD BASELINE
 
-[FACT] Python 3.14.2 local virtual environment; audio/classifier unit tests, package imports, and dependency checks pass.
+[FACT] Python 3.14.2 local virtual environment; audio, classifier, simulator, and localization tests plus package imports pass.
 
 ## ACTIVE TASK
 
-Next: Simulated stereo headset input
+Next: ThreatEvent + end-to-end core pipeline
 
 ## RECENT VERIFIED CHANGES
 
-[FACT] Added the lazy pretrained AST adapter, explicit tactical mapping, safe inference-only resampling, and no-download classifier unit tests.
+[FACT] Added NumPy GCC-PHAT delay estimation, geometry-to-angle conversion, and controlled signal-only localization tests.
