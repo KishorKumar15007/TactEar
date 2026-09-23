@@ -1,0 +1,6 @@
+TactEar Prototype Response Procedure
+
+Human speech detected.
+
+Preserve communication awareness.
+Do not trigger a tactical threat advisory solely from speech classification.

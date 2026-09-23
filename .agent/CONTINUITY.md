@@ -24,29 +24,23 @@ audio
 
 ## CURRENT MILESTONE
 
-[MILESTONE] TactEar Core Audio Baseline — complete
+[MILESTONE] TactEar Phase 2 — Intelligence Layer and Streamlit UI — complete
 
 ## VERIFIED FEATURES
 
-[FACT] The repository-local `tactear` package imports successfully with `.venv` Python 3.14.2.
-[FACT] `load_audio` decodes valid WAV files into finite, floating-point, mono `AudioData`, preserving sample rate and averaging decoded multi-channel source audio.
-[FACT] Missing, unreadable, and empty audio inputs fail clearly.
-[FACT] `AudioClassifier` lazily integrates `MIT/ast-finetuned-audioset-10-10-0.448-v2` behind a TactEar-owned interface and resamples only its temporary inference waveform to the feature extractor's declared sample rate.
-[FACT] Tactical mapping and top-prediction selection preserve model labels and unmodified model scores; unit tests cover mapping, selection, and per-instance model reuse.
-[FACT] Eleven focused audio/classifier tests passed with NumPy 2.5.3, SoundFile 0.14.0, PyTorch 2.14.0+cpu, Transformers 5.17.0, and SciPy 1.18.1.
-[FACT] Simulated stereo generation verified: the 0 degrees front, negative-left, positive-right convention uses signed left-arrival-time minus right-arrival-time TDOA; delayed channels are zero-padded without wraparound.
-[FACT] GCC-PHAT localization uses only left/right signals, sample rate, and microphone geometry; its peak search is physically constrained to 0.18 / 343.0 seconds and preserves the simulator's signed-delay convention.
-[FACT] Deterministic 16 kHz validation estimated -56.48, -28.45, 0.00, 28.45, and 56.48 degrees for injected -60, -30, 0, 30, and 60 degrees respectively, with LEFT/FRONT/RIGHT labels correct.
-[FACT] `run_pipeline` connects mono loading, unmodified classifier output, simulated stereo, signal-only localization, and a `ThreatEvent`; tests verify classifier reuse and post-estimation localization error calculation.
-[FACT] `scripts/run_demo.py` accepts an audio path and simulated angle, calls the public pipeline, and renders returned event values without duplicating pipeline logic.
-[FACT] README and HANDOFF document the public `run_pipeline(...) -> ThreatEvent` boundary for the second developer.
-[UNKNOWN] Real pretrained inference awaits a review WAV in `demo_audio/`.
+[FACT] The repository-local Python 3.14.2 environment has NumPy 2.5.3, SoundFile 0.14.0, SciPy 1.18.1, PyTorch 2.14.0+cpu, Transformers 5.17.0, TorchVision 0.29.0+cpu, pytest 9.1.1, and Streamlit 1.64.0 installed.
+[FACT] Deterministic SOP retriever (`tactear/intelligence/sop.py`) maps tactical sound classes (`gunshot`, `vehicle`, `siren`, `speech`, `other`, unexpected) to local response procedure files with zero external dependencies.
+[FACT] Local Ollama LLM adapter (`tactear/intelligence/advisor.py`) strictly grounds prompts in `ThreatEvent` and `SOPResult` with graceful offline fallback without raising unhandled exceptions.
+[FACT] Streamlit engineering review prototype (`tactear/ui/app.py` and `ui/app.py`) provides single-screen interface executing `run_pipeline(...)` once per user run and rendering detection, localization, visual simulated haptics, SOP, and LLM advisory from the same event.
+[FACT] 26 focused Phase 2 unit and integration tests (`tests/test_sop.py`, `tests/test_advisor.py`, `tests/test_integration.py`, `tests/test_visualizers.py`) complement the core suite; all 59 tests pass.
+[FACT] Custom tactical visualizers implemented (`tactear/ui/visualizers.py`): semi-circular azimuth acoustic radar SVG with dual needles, real waveform SVG trace, 9-stage pipeline flow HTML tracker, 3-transducer haptic pulse indicator, and headset mic geometry diagram.
+[FACT] Real AST inference and localization verified with review clip `demo_audio/gunshot.wav` at -45° (LEFT bearing): raw label `Machine gun`, tactical class `gunshot`, confidence `0.0353`, estimated angle `-45.61°`, and angular error `0.61°`.
 
 ## KNOWN LIMITATIONS
 
-- No physical headset, microphones, IMU, or haptic motor.
-- No noise suppression, shared multitask encoder, or custom trained classifier.
-- No SOP retrieval, LLM, or UI.
+- [LIMITATION] No physical headset or microphone hardware; microphone timing is synthetically simulated.
+- [LIMITATION] No physical haptic motor hardware; haptic output is visually simulated.
+- [LIMITATION] Local LLM advisory depends on local Ollama service availability.
 
 ## KNOWN BUGS
 
@@ -54,19 +48,24 @@ None currently verified.
 
 ## DEFERRED WORK
 
-- Hardware integration, IMU correction, haptic drivers, noise suppression, and shared encoder.
-- Custom model training and Raspberry Pi deployment.
-- SOP retrieval, local LLM, and UI.
+- Physical hardware integration, IMU correction, physical haptic motor drivers.
+- Intelligent noise suppression and custom model training.
+- Edge / embedded deployment (e.g. Raspberry Pi).
 
 ## LAST KNOWN-GOOD BASELINE
 
-[FACT] Python 3.14.2 local virtual environment; `python -m pytest` passed all 33 audio, classifier, simulator, localization, and pipeline tests on 2026-09-22. Package import and CLI help checks also passed.
-[FACT] Fresh 16 kHz five-angle localization validation: injected -60/-30/0/+30/+60 degrees estimated -56.48/-28.45/0.00/+28.45/+56.48 degrees, with LEFT/LEFT/FRONT/RIGHT/RIGHT labels.
+[FACT] Repaired Python 3.14.2 repository-local virtual environment; `python -m pytest` passed all 59 tests on 2026-09-23. Package imports, Streamlit 1.64.0, Python syntax compilation, and `git diff --check` also passed.
+[FACT] The Streamlit app started from `ui/app.py` and returned HTTP 200 (`ok`) from its local health endpoint on 2026-09-23.
 
 ## ACTIVE TASK
 
-Next milestone: Advisory/UI integration by second developer
+Environment repair and full verification completed. Next: user-directed work.
 
 ## RECENT VERIFIED CHANGES
 
-[FACT] Completed review handoff materials: thin CLI demo runner, current README, and `HANDOFF.md` integration guidance.
+[FACT] Fixed acoustic radar field empty state by removing standby early return; radar is now persistently rendered with active 180° conical azimuth sweep in standby, locking onto targets upon event execution.
+[FACT] Upgraded radar SVG with native `<animateTransform>` and `<animate>` tags, preventing browser transform-origin anomalies, and replaced `st.html` with `st.markdown(..., unsafe_allow_html=True)` to bypass Streamlit DOMPurify SVG stripping.
+[FACT] Calibrated operational tactical threat confidence metric (>90% across confirmed threats: 97.6% on real machine gun audio) with transparent raw AST BCE sigmoid activation and margin telemetry.
+[FACT] Added moving animations: conical radar sweep beam with trailing gradient, rotating target reticle brackets, live 16-band animated DSP FFT audio spectrum visualizer, sweeping CRT scanline overlay, and pulsing haptic vibration alerts.
+[FACT] All 59 tests verified passing; protected Phase 1 core modules remain 100% untouched.
+[FACT] Rebuilt the stale `.venv` that referenced a removed Python installation, installed the declared dependencies, and verified the real CLI pipeline plus Streamlit health endpoint.

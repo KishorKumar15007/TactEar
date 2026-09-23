@@ -1,0 +1,6 @@
+TactEar Prototype Response Procedure
+
+Unclassified acoustic event detected.
+
+Maintain awareness.
+Do not infer a threat type without supporting evidence.

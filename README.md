@@ -12,6 +12,9 @@ TactEar is an early software prototype for a future wearable tactical acoustic-a
 - Structured `ThreatEvent` output
 - End-to-end core pipeline
 - CLI demo
+- Deterministic local SOP retrieval
+- Grounded local-Ollama advisory adapter with an offline fallback
+- Streamlit engineering review UI
 
 ## What Is Simulated
 
@@ -25,9 +28,6 @@ Physical left/right microphone timing is currently simulated with controlled gro
 - Noise suppression
 - Shared multitask encoder
 - Custom-trained model
-- SOP retrieval
-- Local LLM
-- UI
 
 ## Run Instructions
 
@@ -41,7 +41,33 @@ python -m pytest
 python scripts/run_demo.py demo_audio\gunshot.wav --angle -45
 ```
 
-The demo requires a valid review WAV. The repository currently contains no review clip; place one in `demo_audio/` before running the final command.
+The demo requires a valid review WAV. Place review clips in `demo_audio/` or upload via the UI.
+
+### Phase 2 Streamlit Web Prototype
+
+Launch the technical engineering review prototype:
+
+```powershell
+.\.venv\Scripts\streamlit.exe run ui/app.py
+```
+(or `streamlit run tactear/ui/app.py`)
+
+#### Local Model Requirement
+The local LLM advisory component connects to **Ollama** (`http://127.0.0.1:11434`). If Ollama is offline or unavailable, the prototype degrades gracefully: acoustic classification, GCC-PHAT localization, SOP retrieval, and simulated haptic visualization remain fully functional while the LLM status displays `OFFLINE`.
+
+#### Demonstration Workflow
+1. Select a demo audio file (or upload a `.wav` file).
+2. Adjust the `SIMULATED SOURCE ANGLE` slider (e.g., `-45°` for left bearing, `+45°` for right bearing).
+3. Click `RUN TACTEAR`.
+4. Inspect real-time **Acoustic Detection** (class and confidence from pretrained AST).
+5. Inspect **GCC-PHAT Localization** (estimated angle and direction).
+6. Inspect **Haptic Output — Simulated** (visual transducer indication).
+7. Inspect the retrieved local **SOP** and grounded **Local Situational Advisory**.
+
+#### Simulation Honesty
+- **Microphone timing**: Synthetically generated based on microphone geometry and ground-truth angle.
+- **Haptic output**: Visually simulated transducer activation; no physical actuators are connected.
+- **Acoustic classification & GCC-PHAT localization**: Real software inference on the supplied waveforms.
 
 ## Teammate Integration Contract
 
